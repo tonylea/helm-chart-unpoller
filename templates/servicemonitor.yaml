@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "unpoller.labels" . | nindent 4 }}
+    # UniFi's metrics describe things outside the cluster, so the external gateway scrapes them.
+    observability.deadrobot.uk/scope: external
+spec:
+  selector:
+    matchLabels:
+      {{- include "unpoller.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s

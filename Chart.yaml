@@ -1,0 +1,10 @@
+apiVersion: v2
+name: unpoller
+description: Deploys unpoller, exporting UniFi metrics to Prometheus
+type: application
+version: 1.0.0
+appVersion: "5.9.4"
+home: https://github.com/tonylea/helm-chart-unpoller
+sources:
+  - https://github.com/unpoller/unpoller
+  - https://github.com/unpoller/dashboards

@@ -1,0 +1,16 @@
+{{- /* One ConfigMap per dashboard, each under the 256KiB that client-side apply's annotation allows. */ -}}
+{{- range $path, $_ := .Files.Glob "dashboards/*.json" }}
+{{- $name := base $path | trimSuffix ".json" }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-dashboard-%s" $.Release.Name $name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "unpoller.labels" $ | nindent 4 }}
+    grafana_dashboard: "1"
+data:
+  {{ printf "unpoller-%s.json" $name }}: |-
+{{ $.Files.Get $path | indent 4 }}
+{{- end }}
