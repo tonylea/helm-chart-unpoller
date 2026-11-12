@@ -1,0 +1,37 @@
+{
+  "version": "0.2",
+  "language": "en-GB",
+  "dictionaries": [
+    "softwareTerms"
+  ],
+  "ignorePaths": [
+    ".git/**",
+    ".husky/**",
+    "node_modules/**",
+    "dashboards/**",
+    "CHANGELOG.md",
+    "package-lock.json"
+  ],
+  "words": [
+    "appVersion",
+    "commitlint",
+    "coreos",
+    "deadrobot",
+    "distroless",
+    "helmignore",
+    "kubeconform",
+    "kustomization",
+    "nindent",
+    "nonroot",
+    "noreply",
+    "secretlint",
+    "servicemonitor",
+    "servicemonitors",
+    "speedtest",
+    "tonylea",
+    "unifi",
+    "unifipoller",
+    "unittest",
+    "unpoller"
+  ]
+}

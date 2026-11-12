@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "unpoller.labels" . | nindent 4 }}
+spec:
+  # A second replica would poll the console twice as often and store every series twice.
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "unpoller.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "unpoller.labels" . | nindent 8 }}
+      annotations:
+        # unpoller reads its config only at start, so a changed config rolls the pod.
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+      containers:
+        - name: unpoller
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default (printf "v%s" .Chart.AppVersion) }}"
+          envFrom:
+            - secretRef:
+                name: {{ required "credentialsSecret is required" .Values.credentialsSecret }}
+          ports:
+            - name: metrics
+              containerPort: 9130
+          # The image's --health only checks the config, so it passes for a hung process.
+          livenessProbe:
+            httpGet:
+              path: /
+              port: metrics
+          readinessProbe:
+            httpGet:
+              path: /
+              port: metrics
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          # The whole directory, hiding the image's example config.
+          volumeMounts:
+            - name: config
+              mountPath: /etc/unpoller
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: {{ .Release.Name }}

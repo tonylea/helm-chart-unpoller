@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "unpoller.labels" . | nindent 4 }}
+data:
+  # The login comes from the environment: UP_UNIFI_CONTROLLER_0_USER and UP_UNIFI_CONTROLLER_0_PASS.
+  up.conf: |
+    [poller]
+      debug = false
+      quiet = false
+
+    # The cache /metrics serves is refreshed at the scrape interval.
+    [prometheus]
+      disable = false
+      http_listen = "0.0.0.0:9130"
+      dead_ports = false
+      interval = "30s"
+
+    [influxdb]
+      disable = true
+
+    [loki]
+      disable = true
+
+    [datadog]
+      enable = false
+
+    [webserver]
+      enable = false
+
+    [unifi]
+      dynamic = false
+
+    # The device-tags endpoint leaves an HTTP/2 stream open in UniFi OS's unifi-core on every call (unpoller issue #1119).
+    [[unifi.controller]]
+      url = {{ required "controllerUrl is required" .Values.controllerUrl | quote }}
+      verify_ssl = false
+      sites = ["all"]
+      save_sites = true
+      save_speedtest = true
+      save_dpi = false
+      save_rogue = false
+      hash_pii = false
+      skip_device_tags = true
+      save_ids = false
+      save_events = false
+      save_syslog = false
+      save_alarms = false
+      save_anomalies = false
+      save_protect_logs = false
+      save_protect_devices = false

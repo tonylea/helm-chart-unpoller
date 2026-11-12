@@ -1,0 +1,17 @@
+image:
+  repository: ghcr.io/unpoller/unpoller
+  # Empty uses the chart's appVersion.
+  tag: ""
+
+# The UniFi console's URL, such as https://unifi.example.com. Required.
+controllerUrl: ""
+
+# An existing Secret with the console login in UP_UNIFI_CONTROLLER_0_USER and UP_UNIFI_CONTROLLER_0_PASS. Required.
+credentialsSecret: ""
+
+resources:
+  requests:
+    cpu: 20m
+    memory: 64Mi
+  limits:
+    memory: 256Mi
