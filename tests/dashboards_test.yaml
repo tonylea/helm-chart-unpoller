@@ -20,21 +20,21 @@ tests:
     asserts:
       - notMatchRegex:
           path: data["unpoller-client-insights.json"]
-          pattern: DS_PROMETHEUS
+          pattern: '\$\{DS_PROMETHEUS\}'
         documentIndex: 0
       - notMatchRegex:
           path: data["unpoller-network-sites.json"]
-          pattern: DS_PROMETHEUS
+          pattern: '\$\{DS_PROMETHEUS\}'
         documentIndex: 1
       - notMatchRegex:
           path: data["unpoller-uap-insights.json"]
-          pattern: DS_PROMETHEUS
+          pattern: '\$\{DS_PROMETHEUS\}'
         documentIndex: 2
       - notMatchRegex:
           path: data["unpoller-usg-insights.json"]
-          pattern: DS_PROMETHEUS
+          pattern: '\$\{DS_PROMETHEUS\}'
         documentIndex: 3
       - notMatchRegex:
           path: data["unpoller-usw-insights.json"]
-          pattern: DS_PROMETHEUS
+          pattern: '\$\{DS_PROMETHEUS\}'
         documentIndex: 4
