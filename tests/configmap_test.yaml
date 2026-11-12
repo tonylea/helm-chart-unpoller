@@ -1,0 +1,61 @@
+suite: up.conf
+templates:
+  - templates/configmap.yaml
+set:
+  controllerUrl: https://unifi.example.com
+  credentialsSecret: unpoller-unifi
+tests:
+  - it: polls the console it's given, without verifying its certificate
+    asserts:
+      - matchRegex:
+          path: data["up.conf"]
+          pattern: '(?m)^\s*url = "https://unifi\.example\.com"$'
+      - matchRegex:
+          path: data["up.conf"]
+          pattern: '(?m)^\s*verify_ssl = false$'
+      - matchRegex:
+          path: data["up.conf"]
+          pattern: '(?m)^\s*sites = \["all"\]$'
+
+  - it: refreshes the /metrics cache at the 30s scrape interval
+    asserts:
+      - matchRegex:
+          path: data["up.conf"]
+          pattern: '(?s)\[prometheus\].*interval = "30s"'
+
+  - it: sends only Prometheus metrics
+    asserts:
+      - matchRegex:
+          path: data["up.conf"]
+          pattern: '(?s)\[influxdb\]\s+disable = true'
+      - matchRegex:
+          path: data["up.conf"]
+          pattern: '(?s)\[loki\]\s+disable = true'
+      - matchRegex:
+          path: data["up.conf"]
+          pattern: '(?s)\[webserver\]\s+enable = false'
+
+  - it: collects what was decided, and no events
+    asserts:
+      - matchRegex:
+          path: data["up.conf"]
+          pattern: '(?m)^\s*save_dpi = false$'
+      - matchRegex:
+          path: data["up.conf"]
+          pattern: '(?m)^\s*save_rogue = false$'
+      - matchRegex:
+          path: data["up.conf"]
+          pattern: '(?m)^\s*skip_device_tags = true$'
+      - matchRegex:
+          path: data["up.conf"]
+          pattern: '(?m)^\s*save_syslog = false$'
+      - matchRegex:
+          path: data["up.conf"]
+          pattern: '(?m)^\s*save_events = false$'
+
+  - it: needs the console's URL
+    set:
+      controllerUrl: ""
+    asserts:
+      - failedTemplate:
+          errorMessage: controllerUrl is required

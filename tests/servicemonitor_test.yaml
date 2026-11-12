@@ -1,0 +1,37 @@
+suite: ServiceMonitor
+templates:
+  - templates/servicemonitor.yaml
+  - templates/service.yaml
+set:
+  controllerUrl: https://unifi.example.com
+  credentialsSecret: unpoller-unifi
+tests:
+  - it: is labelled for the external gateway to scrape
+    template: templates/servicemonitor.yaml
+    asserts:
+      - equal:
+          path: metadata.labels["observability.deadrobot.uk/scope"]
+          value: external
+
+  - it: scrapes the metrics port every 30s
+    template: templates/servicemonitor.yaml
+    asserts:
+      - equal:
+          path: spec.endpoints
+          value:
+            - port: metrics
+              path: /metrics
+              interval: 30s
+
+  - it: serves metrics on 9130 inside the cluster only
+    template: templates/service.yaml
+    asserts:
+      - equal:
+          path: spec.type
+          value: ClusterIP
+      - equal:
+          path: spec.ports
+          value:
+            - name: metrics
+              port: 9130
+              targetPort: metrics

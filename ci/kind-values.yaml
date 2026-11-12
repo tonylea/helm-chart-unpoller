@@ -1,0 +1,3 @@
+# .invalid never resolves, so unpoller fails to log in straight away and keeps retrying.
+controllerUrl: https://unifi.invalid
+credentialsSecret: unpoller-unifi

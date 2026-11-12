@@ -1,0 +1,40 @@
+suite: Dashboards
+templates:
+  - templates/dashboards.yaml
+set:
+  controllerUrl: https://unifi.example.com
+  credentialsSecret: unpoller-unifi
+tests:
+  - it: ships one ConfigMap per dashboard
+    asserts:
+      - hasDocuments:
+          count: 5
+
+  - it: labels each for Grafana's sidecar
+    asserts:
+      - equal:
+          path: metadata.labels.grafana_dashboard
+          value: "1"
+
+  - it: points each at the data source uid prometheus, with no export placeholder left
+    asserts:
+      - notMatchRegex:
+          path: data["unpoller-client-insights.json"]
+          pattern: DS_PROMETHEUS
+        documentIndex: 0
+      - notMatchRegex:
+          path: data["unpoller-network-sites.json"]
+          pattern: DS_PROMETHEUS
+        documentIndex: 1
+      - notMatchRegex:
+          path: data["unpoller-uap-insights.json"]
+          pattern: DS_PROMETHEUS
+        documentIndex: 2
+      - notMatchRegex:
+          path: data["unpoller-usg-insights.json"]
+          pattern: DS_PROMETHEUS
+        documentIndex: 3
+      - notMatchRegex:
+          path: data["unpoller-usw-insights.json"]
+          pattern: DS_PROMETHEUS
+        documentIndex: 4

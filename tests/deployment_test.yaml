@@ -1,0 +1,89 @@
+suite: Deployment
+templates:
+  - templates/deployment.yaml
+  - templates/configmap.yaml
+set:
+  controllerUrl: https://unifi.example.com
+  credentialsSecret: unpoller-unifi
+tests:
+  - it: runs one replica of the chart's appVersion
+    template: templates/deployment.yaml
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 1
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: ghcr.io/unpoller/unpoller:v5.9.4
+
+  - it: loads the login from the named Secret
+    template: templates/deployment.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].envFrom[0].secretRef.name
+          value: unpoller-unifi
+
+  - it: needs the Secret's name
+    template: templates/deployment.yaml
+    set:
+      credentialsSecret: ""
+    asserts:
+      - failedTemplate:
+          errorMessage: credentialsSecret is required
+
+  - it: probes the metrics listener over HTTP
+    template: templates/deployment.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.httpGet
+          value:
+            path: /
+            port: metrics
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.httpGet
+          value:
+            path: /
+            port: metrics
+
+  - it: runs as distroless's nonroot user, read-only, with no capabilities
+    template: templates/deployment.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.securityContext
+          value:
+            runAsNonRoot: true
+            runAsUser: 65532
+      - equal:
+          path: spec.template.spec.containers[0].securityContext
+          value:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+
+  - it: requests CPU with no CPU limit, and limits memory above its request
+    template: templates/deployment.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].resources
+          value:
+            requests:
+              cpu: 20m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+
+  - it: mounts up.conf over the whole of /etc/unpoller
+    template: templates/deployment.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[0].mountPath
+          value: /etc/unpoller
+      - notExists:
+          path: spec.template.spec.containers[0].volumeMounts[0].subPath
+
+  - it: rolls the pod when the config changes
+    template: templates/deployment.yaml
+    asserts:
+      - exists:
+          path: spec.template.metadata.annotations["checksum/config"]
