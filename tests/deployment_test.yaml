@@ -61,17 +61,26 @@ tests:
             capabilities:
               drop: [ALL]
 
-  - it: requests CPU with no CPU limit, and limits memory above its request
+  - it: sets no requests or limits by default
     template: templates/deployment.yaml
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[0].resources
+
+  - it: passes resources through as given
+    template: templates/deployment.yaml
+    set:
+      resources:
+        requests:
+          cpu: 6m
+          memory: 35Mi
     asserts:
       - equal:
           path: spec.template.spec.containers[0].resources
           value:
             requests:
-              cpu: 20m
-              memory: 64Mi
-            limits:
-              memory: 256Mi
+              cpu: 6m
+              memory: 35Mi
 
   - it: mounts up.conf over the whole of /etc/unpoller
     template: templates/deployment.yaml
