@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2.0.0](https://github.com/tonylea/helm-chart-unpoller/compare/v1.0.1...v2.0.0) (2026-11-26)
+
+### ⚠ BREAKING CHANGES
+
+* an install whose scraper selects on the old scope label must now set it in
+  serviceMonitor.labels.
+
+### Features
+
+* take the ServiceMonitor's extra labels from values ([af3249a](https://github.com/tonylea/helm-chart-unpoller/commit/af3249a08d3077344a1742d70e10f03b2bd1d297))
+
 ## [1.0.1](https://github.com/tonylea/helm-chart-unpoller/compare/v1.0.0...v1.0.1) (2026-11-26)
 
 ### Bug Fixes

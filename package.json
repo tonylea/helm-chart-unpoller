@@ -1,6 +1,6 @@
 {
   "name": "helm-chart-unpoller",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Deploys unpoller, exporting UniFi metrics to Prometheus",
   "private": true,
   "repository": {
