@@ -16,7 +16,6 @@
     "appVersion",
     "commitlint",
     "coreos",
-    "deadrobot",
     "distroless",
     "helmignore",
     "kubeconform",

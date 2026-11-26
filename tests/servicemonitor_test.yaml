@@ -6,12 +6,19 @@ set:
   controllerUrl: https://unifi.example.com
   credentialsSecret: unpoller-unifi
 tests:
-  - it: is labelled for the external gateway to scrape
+  - it: adds the labels it is given
     template: templates/servicemonitor.yaml
+    set:
+      serviceMonitor:
+        labels:
+          example.com/scope: external
     asserts:
       - equal:
-          path: metadata.labels["observability.deadrobot.uk/scope"]
+          path: metadata.labels["example.com/scope"]
           value: external
+      - equal:
+          path: metadata.labels["app.kubernetes.io/name"]
+          value: unpoller
 
   - it: scrapes the metrics port every 30s
     template: templates/servicemonitor.yaml
