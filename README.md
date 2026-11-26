@@ -26,7 +26,7 @@ unpoller runs as distroless's `nonroot` user (65532) with a read-only root files
 `credentialsSecret` names an existing Secret with the console login in `UP_UNIFI_CONTROLLER_0_USER` and `UP_UNIFI_CONTROLLER_0_PASS`.
 unpoller recommends a Limited Admin with read-only access to the Network app, restricted to local access.
 
-This request matches unpoller's median use over a week, polling one console:
+Recommended request:
 
 ```yaml
 resources:
