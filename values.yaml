@@ -10,3 +10,6 @@ controllerUrl: ""
 credentialsSecret: ""
 
 resources: {}
+
+serviceMonitor:
+  labels: {}

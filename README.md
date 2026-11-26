@@ -5,7 +5,7 @@ Deploys [unpoller](https://github.com/unpoller/unpoller), which polls a UniFi co
 The chart runs one replica, metrics only:
 
 - unpoller polls every controller site (`sites = ["all"]`), without verifying the console's certificate, and refreshes the cache `/metrics` serves every 30s.
-- A ClusterIP Service on 9130, and a `ServiceMonitor` scraping it every 30s, labelled `observability.deadrobot.uk/scope: external`.
+- A ClusterIP Service on 9130, and a `ServiceMonitor` scraping it every 30s, with any extra labels from `serviceMonitor.labels`.
 - No InfluxDB, Loki, Datadog or web server output, and no events, alarms, anomalies, IDS or syslog.
 - DPI and neighbouring access points aren't collected; sites and speed tests are, and client names stay readable.
 - Device tags aren't fetched: on UniFi OS consoles every call to that endpoint leaves an HTTP/2 stream open in `unifi-core`, which slowly exhausts the console's memory ([unpoller#1119](https://github.com/unpoller/unpoller/issues/1119)).
@@ -22,6 +22,7 @@ unpoller runs as distroless's `nonroot` user (65532) with a read-only root files
 | `image.repository` | `ghcr.io/unpoller/unpoller` |
 | `image.tag` | `v` and the chart's `appVersion` |
 | `resources` | none |
+| `serviceMonitor.labels` | none |
 
 `credentialsSecret` names an existing Secret with the console login in `UP_UNIFI_CONTROLLER_0_USER` and `UP_UNIFI_CONTROLLER_0_PASS`.
 unpoller recommends a Limited Admin with read-only access to the Network app, restricted to local access.

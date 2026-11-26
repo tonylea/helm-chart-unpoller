@@ -5,8 +5,9 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "unpoller.labels" . | nindent 4 }}
-    # UniFi's metrics describe things outside the cluster, so the external gateway scrapes them.
-    observability.deadrobot.uk/scope: external
+    {{- with .Values.serviceMonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   selector:
     matchLabels:
